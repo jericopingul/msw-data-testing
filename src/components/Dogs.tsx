@@ -1,8 +1,9 @@
 import { Button, Flex, Grid, useToast } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
+import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Layout from './Layout';
 import { Dog } from '../types';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
 import DogCard from './DogCard';
 import Loading from './Loading';
 
@@ -54,10 +55,10 @@ function useUpdateDog() {
   const queryClient = useQueryClient();
   const { mutate, ...rest } = useMutation<Dog, Error, string>(
     async (dogId: string) => {
-      const response = await fetch(`/api/dogs/${dogId}`, {
+      const response = await axios(`/api/dogs/${dogId}`, {
         method: 'PUT',
       });
-      return await response.json();
+      return await response.data;
     },
     {
       onSuccess: ({ breed }) => {
@@ -75,9 +76,9 @@ function useUpdateDog() {
 function useDeleteDog() {
   const toast = useToast();
   const queryClient = useQueryClient();
-  const { mutate, ...rest } = useMutation<Response, Error, string>(
+  const { mutate, ...rest } = useMutation<unknown, Error, string>(
     (dogId: string) =>
-      fetch(`/api/dogs/${dogId}`, {
+      axios(`/api/dogs/${dogId}`, {
         method: 'DELETE',
       }),
     {
@@ -98,10 +99,10 @@ function useCreateDog() {
   const queryClient = useQueryClient();
   const { mutate, ...rest } = useMutation<Dog>(
     async () => {
-      const response = await fetch('/api/dogs', {
+      const response = await axios('/api/dogs', {
         method: 'POST',
       });
-      return await response.json();
+      return await response.data;
     },
     {
       onSuccess: ({ breed }) => {
@@ -120,8 +121,8 @@ function useGetAllDogs() {
   const { data: dogs, ...rest } = useQuery<Dog[], Error>(
     'getAllDogs',
     async () => {
-      const response = await fetch(`/api/dogs`);
-      return await response.json();
+      const response = await axios(`/api/dogs`);
+      return await response.data;
     }
   );
   return { dogs, ...rest };

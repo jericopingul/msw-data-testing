@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
+import axios from 'axios';
 import { useQuery } from 'react-query';
 import { Dog } from '../types';
 
@@ -55,14 +56,14 @@ export default function DogCard({
       </Stack>
       <Stack mt={6} direction="row" spacing={4} align="center">
         <IconButton
-          aria-label="edit button"
+          aria-label={`update ${owner}'s dog`}
           isRound
           varian="ghost"
           onClick={onUpdate}
           icon={<EditIcon />}
         />
         <IconButton
-          aria-label="delete button"
+          aria-label={`delete ${owner}'s dog`}
           isRound
           varian="ghost"
           onClick={onDelete}
@@ -77,10 +78,10 @@ function useDogImage(dogId: string, breed: string) {
   const { data, ...rest } = useQuery<{ message: string }, Error>(
     ['getDogImage', breed, dogId],
     async () => {
-      const response = await fetch(
+      const response = await axios(
         `https://dog.ceo/api/breed/${breed}/images/random`
       );
-      return await response.json();
+      return await response.data;
     }
   );
   return { imageUrl: data?.message, ...rest };

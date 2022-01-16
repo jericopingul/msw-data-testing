@@ -9,4 +9,9 @@ export default defineConfig({
       '/api': { target: 'http://my.server/api', changeOrigin: true },
     },
   },
+  // @ts-ignore
+  test: {
+    global: true,
+    environment: 'jsdom',
+  },
 });

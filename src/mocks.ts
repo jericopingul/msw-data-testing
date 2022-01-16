@@ -1,6 +1,5 @@
-import { BASE_URL } from './config';
 import { Dog } from './types';
-import { type DefaultRequestBody, rest, PathParams, setupWorker } from 'msw';
+import { DefaultRequestBody, rest, PathParams, setupWorker } from 'msw';
 import { factory, primaryKey } from '@mswjs/data';
 import faker from 'faker';
 
@@ -26,10 +25,9 @@ const modelDictionary = {
 
 const db = factory(modelDictionary);
 
-function seedDb() {
-  for (let i = 0; i < 4; i++) {
-    db.dog.create({ breed: BREEDS[i % BREEDS.length] });
-  }
+export function seedDb() {
+  db.dog.create({ owner: 'Jerico', breed: 'maltese' });
+  db.dog.create({ owner: 'Jerry', breed: 'pug' });
 }
 
 export const handlers = [
