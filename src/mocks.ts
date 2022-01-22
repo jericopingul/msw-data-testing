@@ -2,16 +2,7 @@ import { Dog } from './types';
 import { DefaultRequestBody, rest, PathParams, setupWorker } from 'msw';
 import { factory, primaryKey } from '@mswjs/data';
 import faker from 'faker';
-
-const BREEDS = [
-  'maltese',
-  'corgi',
-  'pug',
-  'bulldog/french',
-  'pomeranian',
-  'shiba',
-  'sheepdog/shetland',
-];
+import { BREEDS } from './helpers';
 
 const modelDictionary = {
   dog: {
@@ -37,13 +28,10 @@ export const handlers = [
       return res(ctx.json(db.dog.getAll()));
     }
   ),
-  rest.post<DefaultRequestBody, PathParams, Dog>(
-    '/api/dogs',
-    (_req, res, ctx) => {
-      const created = db.dog.create();
-      return res(ctx.json(created));
-    }
-  ),
+  rest.post<Omit<Dog, 'id'>, PathParams, Dog>('/api/dogs', (req, res, ctx) => {
+    const created = db.dog.create(req.body);
+    return res(ctx.json(created));
+  }),
   rest.delete<DefaultRequestBody, { id: string }, Dog>(
     '/api/dogs/:id',
     (req, res, ctx) => {
@@ -51,17 +39,12 @@ export const handlers = [
       return res(ctx.status(204));
     }
   ),
-  rest.put<DefaultRequestBody, { id: string }, Dog>(
+  rest.put<Omit<Dog, 'id'>, { id: string }, Dog>(
     '/api/dogs/:id',
     (req, res, ctx) => {
       const updated = db.dog.update({
         where: { id: { equals: req.params.id } },
-        data: {
-          breed: faker.helpers.randomize(BREEDS),
-          age: faker.datatype.number(13),
-          description: faker.lorem.words(5),
-          owner: `${faker.name.firstName()} ${faker.name.lastName()}`,
-        },
+        data: req.body,
       });
       return res(ctx.json(updated!));
     }

@@ -6,6 +6,7 @@ import Layout from './Layout';
 import { Dog } from '../types';
 import DogCard from './DogCard';
 import Loading from './Loading';
+import { createRandomDog } from '../helpers';
 
 export default function Dogs() {
   const { dogs, isLoading } = useGetAllDogs();
@@ -57,6 +58,8 @@ function useUpdateDog() {
     async (dogId: string) => {
       const response = await axios(`/api/dogs/${dogId}`, {
         method: 'PUT',
+        // imagine getting this data from a form
+        data: createRandomDog(),
       });
       return await response.data;
     },
@@ -101,6 +104,8 @@ function useCreateDog() {
     async () => {
       const response = await axios('/api/dogs', {
         method: 'POST',
+        // imagine getting this data from a form
+        data: createRandomDog(),
       });
       return await response.data;
     },
